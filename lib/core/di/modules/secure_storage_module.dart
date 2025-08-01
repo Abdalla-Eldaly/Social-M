@@ -1,0 +1,10 @@
+// lib/core/di/di_module.dart
+
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:injectable/injectable.dart';
+
+@module
+abstract class RegisterModule {
+  @lazySingleton
+  FlutterSecureStorage get secureStorage => const FlutterSecureStorage();
+}
