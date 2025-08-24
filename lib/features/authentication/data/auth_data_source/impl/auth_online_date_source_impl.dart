@@ -9,12 +9,12 @@ import '../../../../../core/utils/network/connectivity_service.dart';
 import '../../models/response/auth_response_dto.dart';
 import '../contract/auth_online_date_source.dart';
 
-@Injectable(as: AuthDataSource)
-class AuthDataSourceImpl implements AuthDataSource {
+@Injectable(as: DataSource)
+class DataSourceImpl implements DataSource {
   final ApiClient apiClient;
   final ConnectivityService connectivityService;
 
-  AuthDataSourceImpl(this.apiClient, this.connectivityService);
+  DataSourceImpl(this.apiClient, this.connectivityService);
 
   Future<Either<AuthErrorDto, T>> _executeApiCall<T>({
     required String endpoint,

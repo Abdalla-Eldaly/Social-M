@@ -25,6 +25,14 @@ class ApiClient {
     ));
   }
 
+  Future<Response> get(String path, {Map<String, dynamic>? queryParameters}) {
+    return dio.get(
+      path,
+      queryParameters: queryParameters,
+      options: Options(contentType: 'application/json'),
+    );
+  }
+
   Future<Response> post(String path, {dynamic data}) {
     final isMultipart = data is FormData;
     return dio.post(

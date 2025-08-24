@@ -6,4 +6,5 @@
   static const String login = '/Authentication/login';
   static const String refresh = 'Authentication/refresh';
   static const String register = '/Authentication/register';
+  static const String posts = '/Posts';
  }

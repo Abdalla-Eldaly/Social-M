@@ -10,7 +10,7 @@ import '../entites/response/auth_result.dart';
 class RegisterUseCase extends BaseUseCase<
     ({String name, String username, String email, String password, String bio, File profileImage}),
     AuthOutcome> {
-  final AuthRepository repository;
+  final  Repository repository;
 
   RegisterUseCase(this.repository);
 

@@ -6,11 +6,11 @@ import '../../domain/entites/response/auth_result.dart';
 import '../auth_data_source/contract/auth_online_date_source.dart';
 import '../../../../core/utils/network/failure.dart';
 
-@Injectable(as: AuthRepository)
-class AuthRepositoryImpl implements AuthRepository {
-  final AuthDataSource dataSource;
+@Injectable(as:   Repository)
+class  RepositoryImpl implements  Repository {
+  final DataSource dataSource;
 
-  AuthRepositoryImpl(this.dataSource);
+   RepositoryImpl(this.dataSource);
 
   @override
   Future<Either<Failure, AuthOutcome>> login(String email, String password) async {

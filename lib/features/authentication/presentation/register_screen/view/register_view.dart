@@ -3,12 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:social_m_app/core/config/router/app_router.dart';
 import 'package:social_m_app/core/utils/theme/app_images.dart';
 import 'dart:io';
 
 import '../../../../../core/base/base_state.dart';
 import '../../../../../core/di/di.dart';
 import '../../../../../core/utils/theme/app_color.dart';
+import '../../../../../core/utils/theme/app_dialogs.dart';
 import '../../../../../core/utils/theme/app_text_style.dart';
 import '../../../../../core/utils/validator/validator.dart';
 import '../../../../../core/utils/widgets/custom_elevated_button.dart';
@@ -24,7 +26,8 @@ class RegisterView extends StatefulWidget {
   _RegisterViewState createState() => _RegisterViewState();
 }
 
-class _RegisterViewState extends State<RegisterView> with TickerProviderStateMixin {
+class _RegisterViewState extends State<RegisterView>
+    with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -32,15 +35,10 @@ class _RegisterViewState extends State<RegisterView> with TickerProviderStateMix
       child: BlocConsumer<RegisterViewModel, BaseState>(
         listener: (context, state) {
           if (state is SuccessState<AuthOutcome>) {
-            // Navigate to next screen or show success message
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Registration successful!')),
-            );
-            // Example: context.router.push(const HomeRoute());
+            AppDialogs.showSuccessToast(state.data.toString());
+            context.replaceRoute(const MainLayoutRoute());
           } else if (state is ErrorState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.errorMessage)),
-            );
+            AppDialogs.showErrorToast(state.errorMessage);
           }
         },
         builder: (context, state) {
@@ -58,10 +56,11 @@ class _RegisterViewState extends State<RegisterView> with TickerProviderStateMix
             body: Form(
               key: viewModel.formKey,
               child: ListView(
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 56),
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 56),
                 children: [
-                  // Profile Image Picker
                   Center(
                     child: GestureDetector(
                       onTap: () => viewModel.pickProfileImage(),
@@ -79,19 +78,19 @@ class _RegisterViewState extends State<RegisterView> with TickerProviderStateMix
                                   color: AppColors.grey,
                                   image: image != null
                                       ? DecorationImage(
-                                    image: FileImage(image),
-                                    fit: BoxFit.cover,
-                                  )
+                                          image: FileImage(image),
+                                          fit: BoxFit.cover,
+                                        )
                                       : null,
                                 ),
                                 child: image == null
                                     ? const Center(
-                                  child: Icon(
-                                    CupertinoIcons.person,
-                                    size: 90,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                )
+                                        child: Icon(
+                                          CupertinoIcons.person,
+                                          size: 90,
+                                          color: AppColors.textSecondary,
+                                        ),
+                                      )
                                     : null,
                               ),
                               Container(
@@ -118,13 +117,13 @@ class _RegisterViewState extends State<RegisterView> with TickerProviderStateMix
                     builder: (context, imageError, _) {
                       return imageError != null
                           ? Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Text(
-                          imageError,
-                          style: AppTextStyle.error,
-                          textAlign: TextAlign.center,
-                        ),
-                      )
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Text(
+                                imageError,
+                                style: AppTextStyle.error,
+                                textAlign: TextAlign.center,
+                              ),
+                            )
                           : const SizedBox.shrink();
                     },
                   ),
@@ -152,7 +151,8 @@ class _RegisterViewState extends State<RegisterView> with TickerProviderStateMix
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.next,
                         controller: viewModel.usernameController,
-                        validator: (value) => AppValidator.validateUsername(value),
+                        validator: (value) =>
+                            AppValidator.validateUsername(value),
                       );
                     },
                   ),
@@ -166,7 +166,8 @@ class _RegisterViewState extends State<RegisterView> with TickerProviderStateMix
                         keyboardType: TextInputType.phone,
                         textInputAction: TextInputAction.next,
                         controller: viewModel.phoneController,
-                        validator: (value) => AppValidator.validatePhoneNumber(value),
+                        validator: (value) =>
+                            AppValidator.validatePhoneNumber(value),
                       );
                     },
                   ),
@@ -195,7 +196,8 @@ class _RegisterViewState extends State<RegisterView> with TickerProviderStateMix
                         textInputAction: TextInputAction.next,
                         controller: viewModel.passwordController,
                         obscureText: true,
-                        validator: (value) => AppValidator.validatePassword(value),
+                        validator: (value) =>
+                            AppValidator.validatePassword(value),
                       );
                     },
                   ),
@@ -210,7 +212,8 @@ class _RegisterViewState extends State<RegisterView> with TickerProviderStateMix
                         textInputAction: TextInputAction.newline,
                         controller: viewModel.bioController,
                         maxLines: 3,
-                        validator: (value) => AppValidator.validateBioDescription(value),
+                        validator: (value) =>
+                            AppValidator.validateBioDescription(value),
                       );
                     },
                   ),
@@ -224,8 +227,8 @@ class _RegisterViewState extends State<RegisterView> with TickerProviderStateMix
                       onPressed: state is LoadingState
                           ? null
                           : () {
-                        viewModel.register();
-                      },
+                              viewModel.register();
+                            },
                       isLoading: state is LoadingState,
                       isPrimary: true,
                     ),

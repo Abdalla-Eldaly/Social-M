@@ -8,7 +8,7 @@ import '../entites/response/auth_result.dart';
 
 @injectable
 class RefreshTokenUseCase extends BaseUseCase<String, AuthOutcome> {
-  final AuthRepository repository;
+  final  Repository repository;
 
   RefreshTokenUseCase(this.repository);
 

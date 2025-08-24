@@ -8,7 +8,7 @@ import '../entites/response/auth_result.dart';
 
 @injectable
 class LoginUseCase extends BaseUseCase<(String, String), AuthOutcome> {
-  final AuthRepository repository;
+  final  Repository repository;
 
   LoginUseCase(this.repository);
 

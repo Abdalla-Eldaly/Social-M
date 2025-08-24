@@ -32,6 +32,18 @@ import '../../features/authentication/presentation/login_screen/login_view_model
     as _i998;
 import '../../features/authentication/presentation/register_screen/register_view_model/register_view_model.dart'
     as _i559;
+import '../../features/posts_feature/data/data_source/contract/post_data_source.dart'
+    as _i354;
+import '../../features/posts_feature/data/data_source/post_data_source_impl.dart'
+    as _i891;
+import '../../features/posts_feature/domain/repositories/post_repository.dart'
+    as _i160;
+import '../../features/posts_feature/domain/repositories/post_repository_impl.dart'
+    as _i712;
+import '../../features/posts_feature/domain/usecases/get_posts_use_case.dart'
+    as _i252;
+import '../../features/posts_feature/presentation/home_screen/cubit/post_cubit.dart'
+    as _i271;
 import '../config/router/app_router.dart' as _i351;
 import '../utils/network/api_client.dart' as _i759;
 import '../utils/network/connectivity_service.dart' as _i279;
@@ -53,14 +65,14 @@ extension GetItInjectableX on _i174.GetIt {
       environmentFilter,
     );
     final appRouterModule = _$AppRouterModule();
+    final connectivityModule = _$ConnectivityModule();
     final dioModule = _$DioModule();
     final registerModule = _$RegisterModule();
-    final connectivityModule = _$ConnectivityModule();
     gh.lazySingleton<_i351.AppRouter>(() => appRouterModule.appRouter);
+    gh.lazySingleton<_i895.Connectivity>(() => connectivityModule.connectivity);
     gh.lazySingleton<_i361.Dio>(() => dioModule.dio());
     gh.lazySingleton<_i558.FlutterSecureStorage>(
         () => registerModule.secureStorage);
-    gh.lazySingleton<_i895.Connectivity>(() => connectivityModule.connectivity);
     gh.factory<_i279.ConnectivityService>(
         () => _i279.ConnectivityServiceImpl(gh<_i895.Connectivity>()));
     gh.lazySingleton<_i303.SecureStorage>(
@@ -69,33 +81,43 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i361.Dio>(),
           gh<_i303.SecureStorage>(),
         ));
-    gh.factory<_i66.AuthDataSource>(() => _i790.AuthDataSourceImpl(
+    gh.factory<_i66.DataSource>(() => _i790.DataSourceImpl(
           gh<_i759.ApiClient>(),
           gh<_i279.ConnectivityService>(),
         ));
-    gh.factory<_i337.AuthRepository>(
-        () => _i620.AuthRepositoryImpl(gh<_i66.AuthDataSource>()));
+    gh.factory<_i354.PostDataSource>(() => _i891.PostDataSourceImpl(
+          gh<_i759.ApiClient>(),
+          gh<_i279.ConnectivityService>(),
+        ));
+    gh.factory<_i337.Repository>(
+        () => _i620.RepositoryImpl(gh<_i66.DataSource>()));
+    gh.factory<_i160.PostRepository>(
+        () => _i712.PostRepositoryImpl(gh<_i354.PostDataSource>()));
     gh.factory<_i959.LoginUseCase>(
-        () => _i959.LoginUseCase(gh<_i337.AuthRepository>()));
+        () => _i959.LoginUseCase(gh<_i337.Repository>()));
     gh.factory<_i928.RefreshTokenUseCase>(
-        () => _i928.RefreshTokenUseCase(gh<_i337.AuthRepository>()));
+        () => _i928.RefreshTokenUseCase(gh<_i337.Repository>()));
     gh.factory<_i1015.RegisterUseCase>(
-        () => _i1015.RegisterUseCase(gh<_i337.AuthRepository>()));
+        () => _i1015.RegisterUseCase(gh<_i337.Repository>()));
+    gh.factory<_i559.RegisterViewModel>(
+        () => _i559.RegisterViewModel(gh<_i1015.RegisterUseCase>()));
+    gh.factory<_i252.GetPostsUseCase>(
+        () => _i252.GetPostsUseCase(gh<_i160.PostRepository>()));
+    gh.factory<_i271.PostCubit>(
+        () => _i271.PostCubit(gh<_i252.GetPostsUseCase>()));
     gh.factory<_i998.LoginViewModel>(() => _i998.LoginViewModel(
           gh<_i959.LoginUseCase>(),
           gh<_i928.RefreshTokenUseCase>(),
           gh<_i303.SecureStorage>(),
         ));
-    gh.factory<_i559.RegisterViewModel>(
-        () => _i559.RegisterViewModel(gh<_i1015.RegisterUseCase>()));
     return this;
   }
 }
 
 class _$AppRouterModule extends _i630.AppRouterModule {}
 
+class _$ConnectivityModule extends _i524.ConnectivityModule {}
+
 class _$DioModule extends _i983.DioModule {}
 
 class _$RegisterModule extends _i590.RegisterModule {}
-
-class _$ConnectivityModule extends _i524.ConnectivityModule {}
