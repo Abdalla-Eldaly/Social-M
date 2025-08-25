@@ -1,12 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'app_dialogs_utils.dart';
 import 'app_images.dart';
 
 class AppDialogs {
   static OverlayEntry? _overlayEntry;
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<
       NavigatorState>();
+
+  static void showFailDialog(
+      {required String message,
+        required BuildContext context,
+        String? posActionTitle,
+        VoidCallback? posAction,
+        String? negativeActionTitle,
+        VoidCallback? negativeAction}) {
+    AppDialogUtils.showDialogOnScreen(
+      context: context,
+      message: message,
+      imagePath: LottiePath.error,
+      posAction: posAction,
+      negativeAction: negativeAction,
+      negativeActionTitle: negativeActionTitle,
+      posActionTitle: posActionTitle,
+    );
+  }
+
+  static void showInfoDialog(
+      {required String message,
+        required BuildContext context,
+        String? posActionTitle,
+        VoidCallback? posAction,
+        String? negativeActionTitle,
+        VoidCallback? negativeAction}) {
+    AppDialogUtils.showDialogOnScreen(
+        context: context,
+        message: message,
+        imagePath: LottiePath.error,
+        posAction: posAction,
+        negativeAction: negativeAction,
+        negativeActionTitle: negativeActionTitle,
+        posActionTitle: posActionTitle);
+  }
 
 
 

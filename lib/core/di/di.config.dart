@@ -44,6 +44,8 @@ import '../../features/posts_feature/domain/usecases/add_comment_use_case.dart'
     as _i37;
 import '../../features/posts_feature/domain/usecases/get_posts_use_case.dart'
     as _i252;
+import '../../features/posts_feature/presentation/home_screen/cubit/comment_cubit.dart'
+    as _i1058;
 import '../../features/posts_feature/presentation/home_screen/cubit/post_cubit.dart'
     as _i271;
 import '../config/router/app_router.dart' as _i351;
@@ -107,14 +109,14 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i559.RegisterViewModel(gh<_i1015.RegisterUseCase>()));
     gh.factory<_i252.GetPostsUseCase>(
         () => _i252.GetPostsUseCase(gh<_i160.PostRepository>()));
+    gh.factory<_i271.PostCubit>(
+        () => _i271.PostCubit(gh<_i252.GetPostsUseCase>()));
+    gh.factory<_i1058.CommentCubit>(
+        () => _i1058.CommentCubit(gh<_i37.AddCommentUseCase>()));
     gh.factory<_i998.LoginViewModel>(() => _i998.LoginViewModel(
           gh<_i959.LoginUseCase>(),
           gh<_i928.RefreshTokenUseCase>(),
           gh<_i303.SecureStorage>(),
-        ));
-    gh.factory<_i271.PostCubit>(() => _i271.PostCubit(
-          gh<_i252.GetPostsUseCase>(),
-          gh<_i37.AddCommentUseCase>(),
         ));
     return this;
   }

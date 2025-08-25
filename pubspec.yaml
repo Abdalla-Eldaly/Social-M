@@ -57,6 +57,7 @@ dependencies:
   json_annotation: ^4.8.1
   cached_network_image: ^3.4.1
   skeletonizer: ^1.4.3
+  timeago: ^3.7.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

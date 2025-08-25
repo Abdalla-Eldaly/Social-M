@@ -16,6 +16,7 @@ abstract class LottiePath {
   static const String _path = 'assets/animations/';
   static String download = '${_path}download_animation.json';
   static String loading = '${_path}loading_animation.json';
+  static String error = '${_path}Sign for error _ Flat style.json';
 
 
 }

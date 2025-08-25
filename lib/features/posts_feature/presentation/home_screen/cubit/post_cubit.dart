@@ -1,17 +1,18 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import '../../../domain/entities/comment.dart';
 import '../../../domain/entities/paginated_posts.dart';
 import '../../../domain/entities/post_entity.dart';
-import '../../../domain/usecases/add_comment_use_case.dart';
 import '../../../domain/usecases/get_posts_use_case.dart';
 import 'post_state.dart';
+
+
 
 @injectable
 class PostCubit extends Cubit<PostState> {
   final GetPostsUseCase _getPostsUseCase;
-  final AddCommentUseCase _addCommentUseCase;
 
-  PostCubit(this._getPostsUseCase, this._addCommentUseCase) : super(PostInitial());
+  PostCubit(this._getPostsUseCase) : super(PostInitial());
 
   int _pageNumber = 1;
   static const int _pageSize = 10;
@@ -23,7 +24,7 @@ class PostCubit extends Cubit<PostState> {
       _posts = [];
       emit(const PostLoading(isFirstFetch: true));
     } else if (state is PostLoaded && (state as PostLoaded).hasReachedMax) {
-      return; // No more posts to fetch
+      return;
     } else if (state is PostLoaded) {
       emit(PostLoadingMore(currentPosts: _posts));
     } else if (state is PostError) {
@@ -57,5 +58,33 @@ class PostCubit extends Cubit<PostState> {
 
   Future<void> retryFetchPosts() async {
     await fetchPosts(isRefresh: true);
+  }
+
+  void updatePostWithNewComment(int postId, Comment newComment) {
+    final updatedPosts = _posts.map((post) {
+      if (post.id == postId) {
+        return Post(
+          id: post.id,
+          caption: post.caption,
+          imageUrl: post.imageUrl,
+          createdAt: post.createdAt,
+          user: post.user,
+          comments: [...(post.comments ?? []), newComment],
+        );
+      }
+      return post;
+    }).toList();
+
+    _posts = updatedPosts;
+
+    emit(PostLoaded(
+      paginatedPosts: PaginatedPosts(
+        items: _posts,
+        currentPage: 1,
+        pageSize: _posts.length,
+        totalCount: _posts.length,
+      ),
+      hasReachedMax: false,
+    ));
   }
 }

@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_m_app/core/di/di.dart';
 import 'package:social_m_app/features/posts_feature/domain/entities/post_entity.dart';
+import 'package:social_m_app/features/posts_feature/domain/entities/user.dart';
 import 'package:social_m_app/features/posts_feature/presentation/home_screen/cubit/post_cubit.dart';
 import 'package:social_m_app/features/posts_feature/presentation/home_screen/cubit/post_state.dart';
+
+import '_widget/post_widget.dart';
 
 @RoutePage()
 class HomeView extends StatefulWidget {
@@ -27,7 +30,8 @@ class _HomeViewState extends State<HomeView> {
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      if (_postCubit.state is! PostLoadingMore && _postCubit.state is! PostLoading) {
+      if (_postCubit.state is! PostLoadingMore &&
+          _postCubit.state is! PostLoading) {
         _postCubit.fetchPosts();
       }
     }
@@ -57,7 +61,8 @@ class _HomeViewState extends State<HomeView> {
             }
           },
           builder: (context, state) {
-            if (state is PostInitial || (state is PostLoading && state.isFirstFetch)) {
+            if (state is PostInitial ||
+                (state is PostLoading && state.isFirstFetch)) {
               return const Center(child: CircularProgressIndicator());
             }
 
@@ -77,7 +82,8 @@ class _HomeViewState extends State<HomeView> {
                     Text("Error: ${state.failure.message}"),
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () => context.read<PostCubit>().retryFetchPosts(),
+                      onPressed: () =>
+                          context.read<PostCubit>().retryFetchPosts(),
                       child: const Text("Retry"),
                     ),
                   ],
@@ -86,16 +92,23 @@ class _HomeViewState extends State<HomeView> {
             }
 
             return RefreshIndicator(
-              onRefresh: () => context.read<PostCubit>().fetchPosts(isRefresh: true),
+              onRefresh: () =>
+                  context.read<PostCubit>().fetchPosts(isRefresh: true),
               child: ListView.separated(
                 controller: _scrollController,
-                padding: const EdgeInsets.all(12),
                 itemBuilder: (context, index) {
                   if (index < posts.length) {
                     final post = posts[index];
-                    return _PostCard(post: post);
+                    final currentUser = User(
+                      id: 1,
+                      username: "omarafifi",
+                      profileImageUrl:
+                      "https://socialm.runasp.net/Uploads/Images/PostImage/3610dcff-4b4d-4933-8c33-1fd931060bbf.jpg",
+                    );
+                    return PostCard(post: post, currentUser: currentUser);
                   } else {
-                    return (state is PostLoadingMore || (state is PostLoaded && !state.hasReachedMax))
+                    return (state is PostLoadingMore ||
+                        (state is PostLoaded && !state.hasReachedMax))
                         ? const Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Center(child: CircularProgressIndicator()),
@@ -103,51 +116,13 @@ class _HomeViewState extends State<HomeView> {
                         : const SizedBox.shrink();
                   }
                 },
-                separatorBuilder: (context, index) => const SizedBox(height: 10),
-                itemCount: posts.length + (state is PostLoaded && state.hasReachedMax ? 0 : 1),
+                separatorBuilder: (context, index) =>
+                const SizedBox(height: 10),
+                itemCount: posts.length +
+                    (state is PostLoaded && state.hasReachedMax ? 0 : 1),
               ),
             );
           },
-        ),
-      ),
-    );
-  }
-}
-
-class _PostCard extends StatelessWidget {
-  final Post post;
-  const _PostCard({required this.post});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (post.imageUrl != null)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  post.imageUrl!,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
-                ),
-              ),
-            const SizedBox(height: 8),
-            Text(
-              post.caption ?? "",
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              post.createdAt.toString(),
-              style: TextStyle(color: Colors.grey[600], fontSize: 12),
-            ),
-          ],
         ),
       ),
     );
