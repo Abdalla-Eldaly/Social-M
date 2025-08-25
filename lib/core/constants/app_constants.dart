@@ -7,4 +7,5 @@
   static const String refresh = 'Authentication/refresh';
   static const String register = '/Authentication/register';
   static const String posts = '/Posts';
+  static const String comment = '/Posts/2/comments';
  }

@@ -1,8 +1,7 @@
- import 'package:equatable/equatable.dart';
-import 'package:social_m_app/core/utils/network/network_exception.dart';
-
+import 'package:equatable/equatable.dart';
+import '../../../../../core/utils/network/network_exception.dart';
 import '../../../domain/entities/paginated_posts.dart';
-
+ import '../../../domain/entities/post_entity.dart';
 
 abstract class PostState extends Equatable {
   const PostState();
@@ -22,6 +21,15 @@ class PostLoading extends PostState {
   List<Object?> get props => [isFirstFetch];
 }
 
+class PostLoadingMore extends PostState {
+  final List<Post> currentPosts;
+
+  const PostLoadingMore({required this.currentPosts});
+
+  @override
+  List<Object?> get props => [currentPosts];
+}
+
 class PostLoaded extends PostState {
   final PaginatedPosts paginatedPosts;
   final bool hasReachedMax;
@@ -37,9 +45,10 @@ class PostLoaded extends PostState {
 
 class PostError extends PostState {
   final NetworkException failure;
+  final List<Post> currentPosts;
 
-  const PostError(this.failure);
+  const PostError(this.failure, {this.currentPosts = const []});
 
   @override
-  List<Object?> get props => [failure];
+  List<Object?> get props => [failure, currentPosts];
 }

@@ -1,8 +1,9 @@
- import 'package:dartz/dartz.dart';
+import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import '../../../../core/utils/network/failure.dart';
 import '../../../../core/utils/network/network_exception.dart';
 import '../../data/data_source/contract/post_data_source.dart';
+import '../entities/comment.dart';
 import '../entities/paginated_posts.dart';
 import 'post_repository.dart';
 
@@ -15,5 +16,11 @@ class PostRepositoryImpl implements PostRepository {
   @override
   Future<Either<NetworkException, PaginatedPosts>> getPosts(int pageNumber, int pageSize) async {
     return await dataSource.getPosts(pageNumber, pageSize);
+  }
+
+  @override
+  Future<Either<NetworkException, Comment>> addComment(String comment, int postId) async {
+    final result = await dataSource.addComment(comment, postId);
+    return result.map((commentDto) => commentDto.toDomain());
   }
 }

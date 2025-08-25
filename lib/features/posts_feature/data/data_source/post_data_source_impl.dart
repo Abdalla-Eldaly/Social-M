@@ -8,6 +8,7 @@ import '../../../../core/utils/network/connectivity_service.dart';
 import '../../../../core/utils/network/failure.dart';
  import '../../../../core/utils/network/network_exception.dart';
 import '../../domain/entities/paginated_posts.dart';
+import '../models/post_dto/comment_dto.dart';
 import '../models/post_dto/paginated_posts_dto.dart';
 import 'contract/post_data_source.dart';
 
@@ -49,6 +50,48 @@ class PostDataSourceImpl implements PostDataSource {
       }
       return Left(NetworkException(
         message: 'Network error: ${e.message ?? 'Unknown error'}',
+      ));
+    } catch (e) {
+      return Left(NetworkException(
+        message: 'Unexpected error: $e',
+      ));
+    }
+  }
+
+
+  @override
+  Future<Either<NetworkException, CommentDto>> addComment(String comment, int postId) async {
+    if (!(await connectivityService.hasConnection())) {
+      return const Left(NetworkException(
+        message: 'No internet connection. Please check your network.',
+      ));
+    }
+
+    try {
+      final response = await apiClient.post(
+        '${ApiConstants.posts}/$postId/comments', // Dynamic endpoint with postId
+        data: {'content': comment}, // Send comment content in the request body
+      );
+
+      if (response.statusCode == 201) { // 201 for resource creation
+        final commentDto = CommentDto.fromJson(response.data);
+        return Right(commentDto);
+      } else {
+        return Left(NetworkException(
+          message: response.data is String
+              ? response.data
+              : response.data['title'] ?? 'Unknown error',
+        ));
+      }
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionError) {
+        return const Left(NetworkException(
+          message: 'No internet connection. Please check your network.',
+        ));
+      }
+      return Left(NetworkException(
+        message: 'Network error: ${e.message ?? 'Unknown error'}',
+        statusCode: e.response?.statusCode,
       ));
     } catch (e) {
       return Left(NetworkException(
