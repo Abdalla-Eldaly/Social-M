@@ -47,7 +47,10 @@ class PostError extends PostState {
   final NetworkException failure;
   final List<Post> currentPosts;
 
-  const PostError(this.failure, {this.currentPosts = const []});
+  const PostError(
+      this.failure, {
+        this.currentPosts = const [],
+      });
 
   String get message => failure.message;
 

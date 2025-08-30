@@ -36,7 +36,7 @@ class _RegisterViewState extends State<RegisterView>
         listener: (context, state) {
           if (state is SuccessState<AuthOutcome>) {
             AppDialogs.showSuccessToast(state.data.toString());
-            context.replaceRoute(const MainLayoutRoute());
+            context.replaceRoute(const LoginRoute());
           } else if (state is ErrorState) {
             AppDialogs.showErrorToast(state.errorMessage);
           }

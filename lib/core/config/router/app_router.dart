@@ -21,6 +21,7 @@ class AppRouter extends RootStackRouter {
       page: LoginRoute.page,
       type: const RouteType.adaptive(opaque: true),
       path: '/login',
+
     ),
     AutoRoute(
       page: RegisterRoute.page,

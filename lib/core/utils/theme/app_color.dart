@@ -10,6 +10,7 @@ class AppColors {
   static const Color textThird = Color(0xFF618A61);
   static const Color grey = Color(0x1217141A);
   static const Color errorRed = Color(0xFFC40000);
+  static const Color red = Colors.red;
   static const Color fieldFill = Color(0xFFF0F2F5);
   static const Color accentBlue = Color(0xFF146EB4);
   static const Color successGreen = Color(0xFF007600);

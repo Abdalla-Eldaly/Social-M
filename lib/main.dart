@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 import 'core/config/router/app_router.dart';
 import 'core/di/di.dart';
+import 'core/providers/user_provider.dart';
 
 void main() async {
   await configureDependencies();
@@ -13,12 +15,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Social M',
-      debugShowCheckedModeBanner: false,
+    return ChangeNotifierProvider<UserProvider>(
 
-      routerDelegate: getIt<AppRouter>().delegate(),
-      routeInformationParser: getIt<AppRouter>().defaultRouteParser(),
+      create: (context) => getIt<UserProvider>(),
+      child: MaterialApp.router(
+        title: 'Social M',
+        debugShowCheckedModeBanner: false,
+
+        routerDelegate: getIt<AppRouter>().delegate(),
+        routeInformationParser: getIt<AppRouter>().defaultRouteParser(),
+      ),
     );
   }
 }

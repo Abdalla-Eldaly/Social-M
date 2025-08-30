@@ -68,6 +68,7 @@ class LoginBody extends StatelessWidget {
                     listener: (context, state) {
                       if (state is SuccessState) {
                         AppDialogs.showSuccessToast('Login Successful!');
+                        context.router.replaceAll([const MainLayoutRoute()]);
                       } else if (state is ErrorState) {
                         AppDialogs.showErrorToast(state.errorMessage);
                       }

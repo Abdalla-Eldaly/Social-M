@@ -1,19 +1,24 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import 'package:social_m_app/core/config/router/app_router.dart';
 import 'package:social_m_app/core/di/di.dart';
+import 'package:social_m_app/core/utils/theme/app_color.dart';
 import 'package:social_m_app/core/utils/theme/app_dialogs.dart';
+import 'package:social_m_app/core/utils/theme/app_images.dart';
 import 'package:social_m_app/core/utils/widgets/custom_cached_image.dart';
+import '../../../../../../core/providers/user_provider.dart';
 import '../../../../domain/entities/post_entity.dart';
-import '../../../../domain/entities/user.dart';
 import '../../cubit/comment_cubit.dart';
 import '../../cubit/post_cubit.dart';
 import '../../cubit/post_state.dart';
 
 class PostCard extends StatelessWidget {
   final Post post;
-  final User currentUser;
 
-  const PostCard({super.key, required this.post, required this.currentUser});
+  const PostCard({super.key, required this.post});
 
   String _formatTimestamp(DateTime? createdAt) {
     if (createdAt == null) return '';
@@ -33,6 +38,9 @@ class PostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+   final userProvider = context.read<UserProvider>();
+    final isGuest = userProvider.isGuest;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -44,7 +52,8 @@ class PostCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(100.0),
                 child: CachedImage(
-                  imageUrl: post.user?.profileImageUrl,
+                  imageUrl:
+                  post.user?.profileImageUrl ?? 'https://via.placeholder.com/40',
                   width: 40,
                   height: 40,
                 ),
@@ -71,7 +80,20 @@ class PostCard extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.more_vert),
                 onPressed: () {
-                  // TODO: Implement post options
+                  if (isGuest) {
+                    AppDialogs.showInfoDialog(
+                      message: 'Please log in to access post options.',
+                      posAction: () {
+                        context.replaceRoute(const LoginRoute());
+                      },
+                      posActionTitle: 'Log In',
+                      negativeAction: () {},
+                      negativeActionTitle: 'Cancel',
+                      context: context,
+                    );
+                  } else {
+
+                  }
                 },
               ),
             ],
@@ -91,31 +113,57 @@ class PostCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
             children: [
-              IconButton(
-                icon: Icon(
-                  post.isLikedByUser ?? false
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                  color:
-                  post.isLikedByUser ?? false ? Colors.red : Colors.black,
+              GestureDetector(
+                onTap: isGuest
+                    ? () {
+                  AppDialogs.showInfoDialog(
+                    message: 'Please log in to like posts.',
+                    posAction: () {
+                      context.replaceRoute(LoginRoute());
+                    },
+                    posActionTitle: 'Log In',
+                    negativeAction: () {},
+                    negativeActionTitle: 'Cancel',
+                    context: context,
+                  );
+                }
+                    : () {
+                  context.read<PostCubit>().togglePostLike(
+                    post.id ?? -1,
+                    !(post.isLikedByUser ?? false),
+                  );
+                },
+                child: SvgPicture.asset(
+                  SvgPath.love,
+                  colorFilter: ColorFilter.mode(
+                    (post.isLikedByUser ?? false)
+                        ? AppColors.red
+                        : AppColors.textSecondary,
+                    BlendMode.srcIn,
+                  ),
                 ),
-                onPressed: () {
-                  // TODO: like/unlike
-                },
               ),
-              IconButton(
-                icon: const Icon(Icons.comment_outlined),
-                onPressed: () {
-                  _showCommentsBottomSheet(context, post);
-                },
+              const SizedBox(width: 20),
+              GestureDetector(
+                onTap: isGuest
+                    ? () {
+                  AppDialogs.showInfoDialog(
+                    message: 'Please log in to comment.',
+                    posAction: () {
+                      context.replaceRoute(LoginRoute());
+                    },
+                    posActionTitle: 'Log In',
+                    negativeAction: () {},
+                    negativeActionTitle: 'Cancel',
+                    context: context,
+                  );
+                }
+                    : () => _showCommentsBottomSheet(context, post),
+                child: SvgPicture.asset(
+                  SvgPath.comment,
+                ),
               ),
               const Spacer(),
-              IconButton(
-                icon: const Icon(Icons.bookmark_border),
-                onPressed: () {
-                  // TODO: save post
-                },
-              ),
             ],
           ),
         ),
@@ -126,8 +174,7 @@ class PostCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Text(
               '${post.likesCount} ${post.likesCount == 1 ? 'like' : 'likes'}',
-              style:
-              textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+              style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
           ),
 
@@ -153,75 +200,77 @@ class PostCard extends StatelessWidget {
             ),
           ),
 
-        // Comments preview
-        BlocBuilder<PostCubit, PostState>(
-          builder: (context, state) {
-            final comments = (state is PostLoaded
-                ? state.paginatedPosts.items
-                ?.firstWhere((p) => p.id == post.id, orElse: () => post)
-                ?.comments
-                : post.comments) ??
-                [];
+        // Comments preview (restricted for guests)
+        if (!isGuest)
+          BlocBuilder<PostCubit, PostState>(
+            builder: (context, state) {
+              final comments = (state is PostLoaded
+                  ? state.paginatedPosts.items
+                  ?.firstWhere((p) => p.id == post.id, orElse: () => post)
+                  .comments
+                  : post.comments) ??
+                  [];
 
-            if (comments.isNotEmpty) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () => _showCommentsBottomSheet(context, post),
-                      child: Text(
-                        'View all ${comments.length} comments',
-                        style: textTheme.bodySmall
-                            ?.copyWith(color: Colors.grey[600]),
-                      ),
-                    ),
-                    ...comments.take(2).map(
-                          (comment) => Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(100.0),
-                              child: CachedImage(
-                                imageUrl: comment.user?.profileImageUrl,
-                                width: 30,
-                                height: 30,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text:
-                                      comment.user?.username ?? 'Unknown',
-                                      style: textTheme.bodySmall?.copyWith(
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    const TextSpan(text: ' '),
-                                    TextSpan(
-                                      text: comment.content,
-                                      style: textTheme.bodySmall,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
+              if (comments.isNotEmpty) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTap: () => _showCommentsBottomSheet(context, post),
+                        child: Text(
+                          'View all ${comments.length} comments',
+                          style: textTheme.bodySmall
+                              ?.copyWith(color: Colors.grey[600]),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              );
-            }
-            return const SizedBox.shrink();
-          },
-        ),
+                      ...comments.take(2).map(
+                            (comment) => Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(100.0),
+                                child: CachedImage(
+                                  imageUrl: comment.user?.profileImageUrl ??
+                                      'https://via.placeholder.com/30',
+                                  width: 30,
+                                  height: 30,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text:
+                                        comment.user?.username ?? 'Unknown',
+                                        style: textTheme.bodySmall?.copyWith(
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      const TextSpan(text: ' '),
+                                      TextSpan(
+                                        text: comment.content,
+                                        style: textTheme.bodySmall,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
 
         // Timestamp
         Padding(
@@ -237,6 +286,23 @@ class PostCard extends StatelessWidget {
 
   void _showCommentsBottomSheet(BuildContext context, Post post) {
     final postCubit = context.read<PostCubit>();
+    final userProvider = context.read<UserProvider>();
+
+    // Prevent showing comment sheet for guests
+    if (userProvider.isGuest) {
+      AppDialogs.showInfoDialog(
+        message: 'Please log in to view or add comments.',
+        posAction: () {
+          context.replaceRoute(LoginRoute());
+        },
+        posActionTitle: 'Log In',
+        negativeAction: () {},
+        negativeActionTitle: 'Cancel',
+        context: context,
+      );
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -281,6 +347,9 @@ class _CommentBottomSheetState extends State<_CommentBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    // Use context.read to avoid rebuilds
+    final userProvider = context.read<UserProvider>();
+
     return DraggableScrollableSheet(
       initialChildSize: 0.7,
       minChildSize: 0.5,
@@ -353,10 +422,14 @@ class _CommentBottomSheetState extends State<_CommentBottomSheet> {
                           itemBuilder: (context, index) {
                             final comment = comments[index];
                             return ListTile(
-                              leading: CachedImage(
-                                imageUrl: comment.user?.profileImageUrl,
-                                width: 30,
-                                height: 30,
+                              leading: ClipRRect(
+                                borderRadius: BorderRadius.circular(100.0),
+                                child: CachedImage(
+                                  imageUrl: comment.user?.profileImageUrl ??
+                                      'https://via.placeholder.com/30',
+                                  width: 30,
+                                  height: 30,
+                                ),
                               ),
                               title: Text(comment.user?.username ?? "Unknown"),
                               subtitle: Text(comment.content ?? ""),
@@ -379,9 +452,11 @@ class _CommentBottomSheetState extends State<_CommentBottomSheet> {
                           Expanded(
                             child: TextField(
                               controller: _commentController,
-                              enabled: !isLoading,
+                              enabled: !isLoading && !userProvider.isGuest,
                               decoration: InputDecoration(
-                                hintText: "Add a comment...",
+                                hintText: userProvider.isGuest
+                                    ? "Log in to comment"
+                                    : "Add a comment...",
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -397,7 +472,7 @@ class _CommentBottomSheetState extends State<_CommentBottomSheet> {
                             icon: isLoading
                                 ? const CircularProgressIndicator(strokeWidth: 2)
                                 : const Icon(Icons.send, color: Colors.blue),
-                            onPressed: isLoading
+                            onPressed: isLoading || userProvider.isGuest
                                 ? null
                                 : () {
                               if (_commentController.text.isNotEmpty) {
