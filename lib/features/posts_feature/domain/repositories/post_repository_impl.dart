@@ -36,4 +36,15 @@ class PostRepositoryImpl implements PostRepository {
     return result.map((userDto) => userDto.toDomain());
 
   }
+  @override
+  Future<Either<NetworkException, List<User>>> getUserFollowers(int userId) async {
+    final result = await dataSource.getUserFollowers(userId);
+    return result.map((userDto) => userDto.map((dto) => dto.toDomain()).toList());
+  }
+
+  @override
+  Future<Either<NetworkException, List<User>>> getUserFollowing(int userId) async {
+    final result = await dataSource.getUserFollowing(userId);
+    return result.map((userDto) => userDto.map((dto) => dto.toDomain()).toList());
+  }
 }

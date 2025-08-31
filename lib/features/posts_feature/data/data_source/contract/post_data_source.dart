@@ -13,5 +13,7 @@ abstract class PostDataSource {
   Future<Either<NetworkException, List<PostDto>>> getUserPosts(int userId);
   Future<Either<NetworkException, CommentDto>> addComment(String comment, int postId);
   Future<Either<NetworkException, UserDto>> getUserInfo();
+  Future<Either<NetworkException, List<UserDto>>> getUserFollowing(int userId);
+  Future<Either<NetworkException, List<UserDto>>> getUserFollowers(int userId);
 
 }

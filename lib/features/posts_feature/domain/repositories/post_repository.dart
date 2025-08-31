@@ -12,4 +12,6 @@ abstract class PostRepository {
   Future<Either<NetworkException, List<Post >>> getUserPosts(int userId);
   Future<Either<NetworkException, Comment>> addComment(String comment, int postId);
   Future<Either<NetworkException, User>> getUserInfo();
+  Future<Either<NetworkException, List<User>>> getUserFollowers(int userId);
+  Future<Either<NetworkException, List<User>>> getUserFollowing(int userId);
 }

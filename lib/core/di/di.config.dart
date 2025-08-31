@@ -44,6 +44,10 @@ import '../../features/posts_feature/domain/usecases/add_comment_use_case.dart'
     as _i37;
 import '../../features/posts_feature/domain/usecases/get_posts_use_case.dart'
     as _i252;
+import '../../features/posts_feature/domain/usecases/get_user_followers.dart'
+    as _i689;
+import '../../features/posts_feature/domain/usecases/get_user_following.dart'
+    as _i786;
 import '../../features/posts_feature/domain/usecases/get_user_posts.dart'
     as _i1004;
 import '../../features/posts_feature/domain/usecases/get_user_use_case.dart'
@@ -120,6 +124,10 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i881.GetUserInfoUseCase(gh<_i160.PostRepository>()));
     gh.factory<_i1004.GetUserPostsUseCase>(
         () => _i1004.GetUserPostsUseCase(gh<_i160.PostRepository>()));
+    gh.factory<_i689.GetUserFollowers>(
+        () => _i689.GetUserFollowers(gh<_i160.PostRepository>()));
+    gh.factory<_i786.GetUserFollowing>(
+        () => _i786.GetUserFollowing(gh<_i160.PostRepository>()));
     gh.factory<_i1058.CommentCubit>(
         () => _i1058.CommentCubit(gh<_i37.AddCommentUseCase>()));
     gh.factory<_i998.LoginViewModel>(() => _i998.LoginViewModel(
@@ -135,6 +143,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i102.ProfileCubit>(() => _i102.ProfileCubit(
           gh<_i26.UserProvider>(),
           gh<_i1004.GetUserPostsUseCase>(),
+          gh<_i689.GetUserFollowers>(),
+          gh<_i786.GetUserFollowing>(),
         ));
     gh.factory<_i271.PostCubit>(() => _i271.PostCubit(
           gh<_i252.GetPostsUseCase>(),

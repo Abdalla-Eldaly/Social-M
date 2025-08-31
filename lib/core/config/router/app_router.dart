@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
 import '../../../features/authentication/presentation/login_screen/view/login_view.dart';
 import '../../../features/authentication/presentation/register_screen/view/register_view.dart';
 import '../../../features/posts_feature/presentation/create_post/view/create_post_screen.dart';
@@ -16,25 +17,22 @@ class AppRouter extends RootStackRouter {
 
   @override
   List<AutoRoute> get routes => [
-    // Authentications
+    // Authentication Routes
     AutoRoute(
       page: LoginRoute.page,
-      type: const RouteType.adaptive(opaque: true),
       path: '/login',
 
     ),
     AutoRoute(
       page: RegisterRoute.page,
       path: '/register',
-      type: const RouteType.adaptive(opaque: true),
-
     ),
 
+    // Main Layout
     AutoRoute(
       page: MainLayoutRoute.page,
-      path: '/mainLayoutRoute',
       initial: true,
-
+      path: '/mainLayoutRoute',
       // guards: [AuthGuard()],
       children: [
         AutoRoute(
@@ -43,11 +41,11 @@ class AppRouter extends RootStackRouter {
         ),
         AutoRoute(
           page: CreatePostRoute.page,
-          path: 'createPostRoute',
+          path: 'createPost',
         ),
         AutoRoute(
           page: StoryRoute.page,
-          path: 'storyRoute',
+          path: 'story',
         ),
         AutoRoute(
           page: ProfileRoute.page,

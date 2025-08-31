@@ -17,15 +17,31 @@ class ProfileAuthenticated extends ProfileState {
   final User user;
   final List<Post>? posts;
   final String? postsError;
+  final List<User>? followers;
+  final String? followersError;
+  final List<User>? following;
+  final String? followingError;
 
   const ProfileAuthenticated({
     required this.user,
     this.posts,
     this.postsError,
+    this.followers,
+    this.followersError,
+    this.following,
+    this.followingError,
   });
 
   @override
-  List<Object?> get props => [user, posts, postsError];
+  List<Object?> get props => [
+    user,
+    posts,
+    postsError,
+    followers,
+    followersError,
+    following,
+    followingError,
+  ];
 }
 
 class ProfileGuest extends ProfileState {}

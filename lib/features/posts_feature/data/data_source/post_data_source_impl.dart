@@ -155,7 +155,7 @@ class PostDataSourceImpl implements PostDataSource {
 
     try {
       final response = await apiClient.get(
-        ApiConstants.user,
+        '${ApiConstants.user}/me',
       );
 
       if (response.statusCode == 200) {
@@ -185,4 +185,94 @@ class PostDataSourceImpl implements PostDataSource {
       ));
     }
   }
+
+
+  @override
+  Future<Either<NetworkException, List<UserDto>>> getUserFollowers(int userId) async {
+    if (!(await connectivityService.hasConnection())) {
+      return const Left(NetworkException(
+        message: 'No internet connection. Please check your network.',
+      ));
+    }
+
+    try {
+      final response = await apiClient.get(
+        '${ApiConstants.user}/$userId/followers',
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> usersJson = response.data;
+        final List<UserDto> users = usersJson
+            .map((json) => UserDto.fromJson(json))
+            .toList();
+        return Right(users);
+      } else {
+        return Left(NetworkException(
+          message: response.data is String
+              ? response.data
+              : response.data['title'] ?? 'Unknown error',
+          statusCode: response.statusCode,
+        ));
+      }
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionError) {
+        return const Left(NetworkException(
+          message: 'No internet connection. Please check your network.',
+        ));
+      }
+      return Left(NetworkException(
+        message: 'Network error: ${e.message ?? 'Unknown error'}',
+        statusCode: e.response?.statusCode,
+      ));
+    } catch (e) {
+      return Left(NetworkException(
+        message: 'Unexpected error: $e',
+      ));
+    }
+  }
+
+  @override
+  Future<Either<NetworkException, List<UserDto>>> getUserFollowing(int userId) async {
+    if (!(await connectivityService.hasConnection())) {
+      return const Left(NetworkException(
+        message: 'No internet connection. Please check your network.',
+      ));
+    }
+
+    try {
+      final response = await apiClient.get(
+        '${ApiConstants.user}/$userId/following',
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> usersJson = response.data;
+        final List<UserDto> users = usersJson
+            .map((json) => UserDto.fromJson(json))
+            .toList();
+        return Right(users);
+      } else {
+        return Left(NetworkException(
+          message: response.data is String
+              ? response.data
+              : response.data['title'] ?? 'Unknown error',
+          statusCode: response.statusCode,
+        ));
+      }
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionError) {
+        return const Left(NetworkException(
+          message: 'No internet connection. Please check your network.',
+        ));
+      }
+      return Left(NetworkException(
+        message: 'Network error: ${e.message ?? 'Unknown error'}',
+        statusCode: e.response?.statusCode,
+      ));
+    } catch (e) {
+      return Left(NetworkException(
+        message: 'Unexpected error: $e',
+      ));
+    }
+  }
+
 }

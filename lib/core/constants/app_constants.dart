@@ -8,5 +8,5 @@
   static const String register = '/Authentication/register';
   static const String posts = '/Posts';
   static const String comment = '/Posts/comments';
-  static const String user = '/Users/me';
+  static const String user = '/Users';
  }

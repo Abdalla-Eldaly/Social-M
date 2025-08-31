@@ -8,6 +8,7 @@ import 'package:social_m_app/features/posts_feature/domain/entities/user.dart';
 import 'package:social_m_app/features/posts_feature/presentation/home_screen/cubit/post_cubit.dart';
 import 'package:social_m_app/features/posts_feature/presentation/home_screen/cubit/post_state.dart';
 import '../../../../../core/providers/user_provider.dart';
+import '../../../../../core/utils/navigation/animated_page_wrapper.dart';
 import '_widget/post_widget.dart';
 
 @RoutePage()
@@ -81,18 +82,22 @@ class _HomeViewState extends State<HomeView>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Required for AutomaticKeepAliveClientMixin
+    super.build(context);
 
-    return Scaffold(
-      appBar: _buildAppBar(context),
-      body: BlocProvider(
-        create: (context) {
-          _postCubit = getIt<PostCubit>()..fetchPosts();
-          return _postCubit;
-        },
-        child: BlocConsumer<PostCubit, PostState>(
-          listener: _handleStateChanges,
-          builder: (context, state) => _buildBody(context, state),
+    return AnimatedPageWrapper(
+      transitionType: PageTransitionType.scaleWithFade,
+      duration: const Duration(milliseconds: 200),
+      child: Scaffold(
+        appBar: _buildAppBar(context),
+        body: BlocProvider(
+          create: (context) {
+            _postCubit = getIt<PostCubit>()..fetchPosts();
+            return _postCubit;
+          },
+          child: BlocConsumer<PostCubit, PostState>(
+            listener: _handleStateChanges,
+            builder: (context, state) => _buildBody(context, state),
+          ),
         ),
       ),
     );
@@ -175,7 +180,10 @@ class _HomeViewState extends State<HomeView>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(),
+          CircularProgressIndicator(
+            strokeWidth: 3,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+          ),
           SizedBox(height: 16),
           Text(
             "Loading posts...",
