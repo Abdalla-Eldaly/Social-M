@@ -13,20 +13,34 @@ import '_widget/post_widget.dart';
 
 @RoutePage()
 class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+  // Accept scroll controller from MainLayoutView
+  final ScrollController? scrollController;
+
+  const HomeView({
+    super.key,
+    this.scrollController,
+  });
 
   @override
   State<HomeView> createState() => _HomeViewState();
 }
 
 class _HomeViewState extends State<HomeView>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   late final ScrollController _scrollController;
   late final PostCubit _postCubit;
+  late final AnimationController _fabAnimationController;
+  late final Animation<double> _fabAnimation;
 
   // Configuration constants
   static const double _loadMoreThreshold = 200.0;
   static const Duration _scrollDebounceDelay = Duration(milliseconds: 100);
+  static const double _scrollToTopThreshold = 400.0;
+
+  // Scroll state tracking
+  bool _showScrollToTopFab = false;
+  double _scrollOffset = 0.0;
+  bool _isLoadingMore = false;
 
   @override
   bool get wantKeepAlive => true;
@@ -35,10 +49,12 @@ class _HomeViewState extends State<HomeView>
   void initState() {
     super.initState();
     _initializeComponents();
+    _initializeAnimations();
   }
 
   void _initializeComponents() {
-    _scrollController = ScrollController();
+    // Use provided scroll controller or create new one
+    _scrollController = widget.scrollController ?? ScrollController();
     _scrollController.addListener(_onScroll);
 
     // Initialize user provider
@@ -46,15 +62,63 @@ class _HomeViewState extends State<HomeView>
     userProvider.initializeAuth();
   }
 
+  void _initializeAnimations() {
+    _fabAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _fabAnimation = CurvedAnimation(
+      parent: _fabAnimationController,
+      curve: Curves.easeInOut,
+    );
+  }
+
   void _onScroll() {
     if (!mounted) return;
 
     final position = _scrollController.position;
+    _scrollOffset = position.pixels;
+
+    // Handle scroll-to-top FAB visibility
+    _updateScrollToTopFab(position.pixels);
+
+    // Handle infinite scrolling with debouncing
+    _handleInfiniteScrolling(position);
+  }
+
+  void _updateScrollToTopFab(double scrollOffset) {
+    final shouldShow = scrollOffset > _scrollToTopThreshold;
+
+    if (shouldShow != _showScrollToTopFab) {
+      setState(() {
+        _showScrollToTopFab = shouldShow;
+      });
+
+      if (shouldShow) {
+        _fabAnimationController.forward();
+      } else {
+        _fabAnimationController.reverse();
+      }
+    }
+  }
+
+  void _handleInfiniteScrolling(ScrollPosition position) {
     final shouldLoadMore = position.pixels >=
         position.maxScrollExtent - _loadMoreThreshold;
 
-    if (shouldLoadMore && _canLoadMore()) {
-      _postCubit.fetchPosts();
+    if (shouldLoadMore && _canLoadMore() && !_isLoadingMore) {
+      setState(() {
+        _isLoadingMore = true;
+      });
+
+      _postCubit.fetchPosts().then((_) {
+        if (mounted) {
+          setState(() {
+            _isLoadingMore = false;
+          });
+        }
+      });
     }
   }
 
@@ -66,17 +130,35 @@ class _HomeViewState extends State<HomeView>
   }
 
   Future<void> _onRefresh() async {
+    setState(() {
+      _isLoadingMore = false;
+    });
     await _postCubit.fetchPosts(isRefresh: true);
   }
 
   void _onRetry() {
+    setState(() {
+      _isLoadingMore = false;
+    });
     context.read<PostCubit>().retryFetchPosts();
+  }
+
+  void _scrollToTop() {
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 800),
+      curve: Curves.easeOutCubic,
+    );
   }
 
   @override
   void dispose() {
     _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
+    // Only dispose if we created the controller ourselves
+    if (widget.scrollController == null) {
+      _scrollController.dispose();
+    }
+    _fabAnimationController.dispose();
     super.dispose();
   }
 
@@ -99,6 +181,7 @@ class _HomeViewState extends State<HomeView>
             builder: (context, state) => _buildBody(context, state),
           ),
         ),
+        floatingActionButton: _buildScrollToTopFab(),
       ),
     );
   }
@@ -116,6 +199,7 @@ class _HomeViewState extends State<HomeView>
       elevation: 0,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       foregroundColor: Theme.of(context).textTheme.titleLarge?.color,
+      automaticallyImplyLeading: false, // Remove back button in main layout
       actions: [
         IconButton(
           icon: const Icon(Icons.notifications_outlined),
@@ -130,6 +214,31 @@ class _HomeViewState extends State<HomeView>
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildScrollToTopFab() {
+    return AnimatedBuilder(
+      animation: _fabAnimation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _fabAnimation.value,
+          child: Opacity(
+            opacity: _fabAnimation.value,
+            child: FloatingActionButton.small(
+              onPressed: _scrollToTop,
+              backgroundColor: Theme.of(context).primaryColor,
+              foregroundColor: Colors.white,
+              elevation: 4,
+              heroTag: "home_scroll_top", // Unique hero tag
+              child: const Icon(
+                Icons.keyboard_arrow_up,
+                size: 20,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -280,24 +389,27 @@ class _HomeViewState extends State<HomeView>
       onRefresh: _onRefresh,
       child: CustomScrollView(
         controller: _scrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ),
+        // Enable scroll position restoration
+        key: const PageStorageKey('home_posts_scroll'),
         slivers: [
-          // Optional: Add a sliver app bar for better UX
+          // Top spacing
           const SliverToBoxAdapter(child: SizedBox(height: 8)),
 
-          // Posts list
+          // Posts list with enhanced performance
           SliverList.separated(
             itemCount: posts.length,
-            itemBuilder: (context, index) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: PostCard(
-                post: posts[index],
-                // onTap: () => _onPostTap(posts[index]),
-                // onLike: () => _onPostLike(posts[index]),
-                // onComment: () => _onPostComment(posts[index]),
-                // onShare: () => _onPostShare(posts[index]),
-              ),
-            ),
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: PostCard(
+                  post: posts[index],
+
+                ),
+              );
+            },
             separatorBuilder: (context, index) => const SizedBox(height: 12),
           ),
 
@@ -306,31 +418,45 @@ class _HomeViewState extends State<HomeView>
             child: _buildLoadMoreIndicator(state),
           ),
 
-          // Bottom spacing
-          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          // Bottom spacing to account for fixed bottom navigation
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 20), // Reduced since nav is now at bottom
+          ),
         ],
       ),
     );
   }
 
   Widget _buildLoadMoreIndicator(PostState state) {
-    final shouldShowLoadingMore = state is PostLoadingMore ||
-        (state is PostLoaded && !state.hasReachedMax);
-
-    if (!shouldShowLoadingMore) {
-      return const SizedBox.shrink();
+    if (state is PostLoadingMore) {
+      return Container(
+        padding: const EdgeInsets.all(16.0),
+        child: const Center(
+          child: SizedBox(
+            width: 24,
+            height: 24,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      );
     }
 
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      child: const Center(
-        child: SizedBox(
-          width: 24,
-          height: 24,
-          child: CircularProgressIndicator(strokeWidth: 2),
+    if (state is PostLoaded && state.hasReachedMax && state.paginatedPosts.items!.isNotEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: Text(
+            "That's all for now!",
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: 14,
+            ),
+          ),
         ),
-      ),
-    );
+      );
+    }
+
+    return const SizedBox.shrink();
   }
 
   // Post interaction handlers

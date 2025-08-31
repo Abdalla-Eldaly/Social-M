@@ -35,6 +35,7 @@ class PostDto {
   factory PostDto.fromJson(Map<String, dynamic> json) => _$PostDtoFromJson(json);
   Map<String, dynamic> toJson() => _$PostDtoToJson(this);
 
+
   Post toDomain() {
     return Post(
       id: id,

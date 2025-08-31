@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../core/utils/network/failure.dart';
 import '../../../../core/utils/network/network_exception.dart';
+import '../../data/models/post_dto/create_post_dto.dart';
 import '../entities/comment.dart';
 import '../entities/paginated_posts.dart';
 import '../entities/post_entity.dart';
@@ -14,4 +15,6 @@ abstract class PostRepository {
   Future<Either<NetworkException, User>> getUserInfo();
   Future<Either<NetworkException, List<User>>> getUserFollowers(int userId);
   Future<Either<NetworkException, List<User>>> getUserFollowing(int userId);
+  Future<Either<NetworkException, Post>> createPost(CreatePostDto createPostDto);
+
 }

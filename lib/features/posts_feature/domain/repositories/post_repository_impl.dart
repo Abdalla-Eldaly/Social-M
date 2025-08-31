@@ -4,6 +4,7 @@ import 'package:social_m_app/features/posts_feature/domain/entities/user.dart';
 import '../../../../core/utils/network/failure.dart';
 import '../../../../core/utils/network/network_exception.dart';
 import '../../data/data_source/contract/post_data_source.dart';
+import '../../data/models/post_dto/create_post_dto.dart';
 import '../entities/comment.dart';
 import '../entities/paginated_posts.dart';
 import '../entities/post_entity.dart';
@@ -35,6 +36,11 @@ class PostRepositoryImpl implements PostRepository {
     final result = await dataSource.getUserInfo( );
     return result.map((userDto) => userDto.toDomain());
 
+  }
+  @override
+  Future<Either<NetworkException, Post>> createPost(CreatePostDto createPostDto) async {
+    final result = await dataSource.createPost(createPostDto);
+    return result.map((postDto) => postDto.toDomain());
   }
   @override
   Future<Either<NetworkException, List<User>>> getUserFollowers(int userId) async {

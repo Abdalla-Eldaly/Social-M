@@ -13,28 +13,26 @@ class AuthenticatedProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        buildSliverAppBar(context, onLogout: () => showLogoutDialog(context)),
-        SliverToBoxAdapter(
-          child: RefreshIndicator(
-            onRefresh: () => context.read<ProfileCubit>().refreshUserData(),
-            child: Builder(builder: (innerContext) {
-              return Column(
-                children: [
-                  buildProfileHeader(context, state),
-                  buildStatsSection(context, state),
-                  buildActionButtons(context,
-                      onShare: () => showShareOptions(context),
-                      onMore: () => showMoreOptions(context)
-                  ),
-                  buildPostsSection(context, state),
-                ],
-              );
-            }),
-          ),
-        )
-      ],
+    return RefreshIndicator(
+      onRefresh: () => context.read<ProfileCubit>().refreshUserData(),
+      child: CustomScrollView(
+        slivers: [
+          buildSliverAppBar(context, onLogout: () => showLogoutDialog(context)),
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                buildProfileHeader(context, state),
+                buildStatsSection(context, state),
+                buildActionButtons(context,
+                    onShare: () => showShareOptions(context),
+                    onMore: () => showMoreOptions(context)
+                ),
+                buildPostsSection(context, state),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }

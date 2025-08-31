@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../../../core/utils/widgets/custom_cached_image.dart';
 import '../../cubit/profile_cubit.dart';
 
 Widget buildSliverAppBar(BuildContext context, {required VoidCallback onLogout}) {
@@ -473,9 +474,7 @@ Widget buildPostsGrid(BuildContext context, dynamic state) {
 
 Widget buildPostCard(BuildContext context, dynamic post, int index) {
   return GestureDetector(
-    onTap: () {
-      // Navigate to post detail
-    },
+    onTap: () {},
     child: Hero(
       tag: 'post_$index',
       child: Container(
@@ -494,61 +493,8 @@ Widget buildPostCard(BuildContext context, dynamic post, int index) {
           child: Stack(
             children: [
               Positioned.fill(
-                child: Image.network(
-                  post.imageUrl ?? '',
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.grey.shade200,
-                            Colors.grey.shade300,
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                      ),
-                      child: Icon(
-                        Icons.image_rounded,
-                        size: 60,
-                        color: Colors.grey.shade500,
-                      ),
-                    );
-                  },
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.7),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(
-                        Icons.favorite_border_rounded,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                      Icon(
-                        Icons.comment_rounded,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                    ],
-                  ),
+                child: CachedImage(
+                  imageUrl: post.imageUrl ?? '',
                 ),
               ),
             ],
@@ -558,7 +504,6 @@ Widget buildPostCard(BuildContext context, dynamic post, int index) {
     ),
   );
 }
-
 Widget buildEmptyPosts(BuildContext context) {
   return Container(
     padding: const EdgeInsets.all(40),

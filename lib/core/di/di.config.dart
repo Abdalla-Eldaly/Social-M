@@ -42,6 +42,8 @@ import '../../features/posts_feature/domain/repositories/post_repository_impl.da
     as _i712;
 import '../../features/posts_feature/domain/usecases/add_comment_use_case.dart'
     as _i37;
+import '../../features/posts_feature/domain/usecases/create_post_use_case.dart'
+    as _i334;
 import '../../features/posts_feature/domain/usecases/get_posts_use_case.dart'
     as _i252;
 import '../../features/posts_feature/domain/usecases/get_user_followers.dart'
@@ -52,6 +54,8 @@ import '../../features/posts_feature/domain/usecases/get_user_posts.dart'
     as _i1004;
 import '../../features/posts_feature/domain/usecases/get_user_use_case.dart'
     as _i881;
+import '../../features/posts_feature/presentation/create_post/cubit/create_post_cubit.dart'
+    as _i404;
 import '../../features/posts_feature/presentation/home_screen/cubit/comment_cubit.dart'
     as _i1058;
 import '../../features/posts_feature/presentation/home_screen/cubit/post_cubit.dart'
@@ -116,18 +120,22 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i1015.RegisterUseCase(gh<_i337.Repository>()));
     gh.factory<_i37.AddCommentUseCase>(
         () => _i37.AddCommentUseCase(gh<_i160.PostRepository>()));
+    gh.factory<_i334.CreatePostUseCase>(
+        () => _i334.CreatePostUseCase(gh<_i160.PostRepository>()));
     gh.factory<_i559.RegisterViewModel>(
         () => _i559.RegisterViewModel(gh<_i1015.RegisterUseCase>()));
     gh.factory<_i252.GetPostsUseCase>(
         () => _i252.GetPostsUseCase(gh<_i160.PostRepository>()));
-    gh.factory<_i881.GetUserInfoUseCase>(
-        () => _i881.GetUserInfoUseCase(gh<_i160.PostRepository>()));
     gh.factory<_i1004.GetUserPostsUseCase>(
         () => _i1004.GetUserPostsUseCase(gh<_i160.PostRepository>()));
+    gh.factory<_i881.GetUserInfoUseCase>(
+        () => _i881.GetUserInfoUseCase(gh<_i160.PostRepository>()));
     gh.factory<_i689.GetUserFollowers>(
         () => _i689.GetUserFollowers(gh<_i160.PostRepository>()));
     gh.factory<_i786.GetUserFollowing>(
         () => _i786.GetUserFollowing(gh<_i160.PostRepository>()));
+    gh.factory<_i404.CreatePostCubit>(
+        () => _i404.CreatePostCubit(gh<_i334.CreatePostUseCase>()));
     gh.factory<_i1058.CommentCubit>(
         () => _i1058.CommentCubit(gh<_i37.AddCommentUseCase>()));
     gh.factory<_i998.LoginViewModel>(() => _i998.LoginViewModel(
