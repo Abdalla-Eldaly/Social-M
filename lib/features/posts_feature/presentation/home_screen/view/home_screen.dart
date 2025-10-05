@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_m_app/core/config/router/app_router.dart';
 import 'package:social_m_app/core/di/di.dart';
 import 'package:social_m_app/core/utils/theme/app_dialogs.dart';
 import 'package:social_m_app/features/posts_feature/domain/entities/post_entity.dart';
@@ -189,7 +190,7 @@ class _HomeViewState extends State<HomeView>
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
       title: const Text(
-        "Home",
+        "Social M",
         style: TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 20,
@@ -197,6 +198,7 @@ class _HomeViewState extends State<HomeView>
       ),
       centerTitle: false,
       elevation: 0,
+
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       foregroundColor: Theme.of(context).textTheme.titleLarge?.color,
       automaticallyImplyLeading: false, // Remove back button in main layout
@@ -210,7 +212,7 @@ class _HomeViewState extends State<HomeView>
         IconButton(
           icon: const Icon(Icons.search_outlined),
           onPressed: () {
-            // Navigate to search
+            context.pushRoute(const SearchRoute());
           },
         ),
       ],
@@ -230,7 +232,7 @@ class _HomeViewState extends State<HomeView>
               backgroundColor: Theme.of(context).primaryColor,
               foregroundColor: Colors.white,
               elevation: 4,
-              heroTag: "home_scroll_top", // Unique hero tag
+              heroTag: "home_scroll_top",
               child: const Icon(
                 Icons.keyboard_arrow_up,
                 size: 20,
@@ -402,12 +404,9 @@ class _HomeViewState extends State<HomeView>
           SliverList.separated(
             itemCount: posts.length,
             itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: PostCard(
-                  post: posts[index],
+              return PostCard(
+                post: posts[index],
 
-                ),
               );
             },
             separatorBuilder: (context, index) => const SizedBox(height: 12),
@@ -460,10 +459,10 @@ class _HomeViewState extends State<HomeView>
   }
 
   // Post interaction handlers
-  void _onPostTap(Post post) {
-    // Navigate to post details
-    // context.router.push(PostDetailRoute(postId: post.id));
-  }
+  // void _onPostTap(Post post) {
+  //   // Navigate to post details
+  //   // context.router.push(PostDetailRoute(postId: post.id));
+  // }
 
   void _onPostLike(Post post) {
     // _postCubit.toggleLike(post.id);

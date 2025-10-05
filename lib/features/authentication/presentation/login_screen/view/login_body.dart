@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:social_m_app/core/config/router/app_router.dart';
+import 'package:social_m_app/core/utils/navigation/navigation_types.dart';
+import 'package:social_m_app/features/authentication/presentation/register_screen/view/register_view.dart';
+import 'package:social_m_app/features/posts_feature/presentation/main_lay_out/view/main_lay_out_screen.dart';
 import '../../../../../core/base/base_state.dart';
 import '../../../../../core/utils/theme/app_color.dart';
 import '../../../../../core/utils/theme/app_dialogs.dart';
@@ -67,8 +70,9 @@ class LoginBody extends StatelessWidget {
                   BlocConsumer<LoginViewModel, BaseState>(
                     listener: (context, state) {
                       if (state is SuccessState) {
+                        context.navigateReplacement(const MainLayoutView());
                         AppDialogs.showSuccessToast('Login Successful!');
-                        context.router.replaceAll([const MainLayoutRoute()]);
+
                       } else if (state is ErrorState) {
                         AppDialogs.showErrorToast(state.errorMessage);
                       }
@@ -136,7 +140,9 @@ class LoginBody extends StatelessWidget {
                         ],
                       ),
                       onPressed: () {
-                        AppDialogs.showInfoToast('Google login not implemented');
+                        context.navigateToWithFade(
+                          const MainLayoutView(),
+                        );
                       },
                     ),
                   ),
@@ -151,7 +157,9 @@ class LoginBody extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          context.pushRoute(const RegisterRoute());
+                          context.navigateToWithSlide(
+                            const RegisterView(),
+                          );
                           viewModel.clearForm();
                         },
                         child: Text(

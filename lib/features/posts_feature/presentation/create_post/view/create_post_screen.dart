@@ -102,7 +102,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   Widget _buildAppBar(BuildContext context, CreatePostState state) {
     final canPost = state is CreatePostImageSelected &&
-        _captionController.text.trim().isNotEmpty;
+        _captionController.text.trim().isNotEmpty && _hashtags.isNotEmpty;
 
     return SliverAppBar(
       backgroundColor: Colors.white,
@@ -130,7 +130,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           TextButton(
             onPressed: canPost
                 ? () {
-              // Dismiss keyboard before posting
               FocusScope.of(context).unfocus();
               context.read<CreatePostCubit>().createPost();
             }
@@ -426,7 +425,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             focusNode: _captionFocusNode,
             maxLines: 4,
             maxLength: 500,
-            // SOLUTION 4: Add text input action to better handle keyboard
             textInputAction: TextInputAction.newline,
             onChanged: (value) => context.read<CreatePostCubit>().updateCaption(value),
             decoration: const InputDecoration(

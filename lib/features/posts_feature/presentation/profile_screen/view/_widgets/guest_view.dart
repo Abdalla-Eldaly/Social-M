@@ -1,5 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:social_m_app/core/utils/navigation/navigation_types.dart';
+import 'package:social_m_app/features/authentication/presentation/login_screen/view/login_view.dart';
+import 'package:social_m_app/features/authentication/presentation/register_screen/view/register_view.dart';
 
 import '../../../../../../core/config/router/app_router.dart';
 
@@ -95,8 +98,9 @@ class GuestView extends StatelessWidget {
                     ),
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        context.replaceRoute(const LoginRoute());
-                      },
+                        context.navigateToWithScale(
+                          const LoginScreen(),
+                        );                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         foregroundColor: Colors.white,
@@ -118,8 +122,9 @@ class GuestView extends StatelessWidget {
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: () {
-                      context.replaceRoute(const RegisterRoute());
-                    },
+                      context.navigateToWithScale(
+                        const RegisterView(),
+                      );                      },
                     child: RichText(
                       text: TextSpan(
                         text: "Don't have an account? ",

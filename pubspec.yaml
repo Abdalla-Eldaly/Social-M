@@ -34,14 +34,14 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
+  cupertino_icons:
   dio:
-  flutter_bloc: ^9.1.1
+  flutter_bloc:
   provider:
-  pretty_dio_logger: ^1.4.0
+  pretty_dio_logger:
   equatable:
   flutter_screenutil:
-  lottie: ^3.2.0
+  lottie:
   injectable:
   get_it:
   auto_route:
@@ -49,20 +49,22 @@ dependencies:
   flutter_secure_storage:
   dartz:
   google_fonts:
-  flutter_svg: ^2.1.0
-  easy_localization: ^3.0.8
-  image_picker: ^1.1.2
+  flutter_svg:
+  easy_localization:
+  image_picker:
   percent_indicator:
-  connectivity_plus: ^6.1.4
-  json_annotation: ^4.8.1
-  cached_network_image: ^3.4.1
-  skeletonizer: ^1.4.3
-  timeago: ^3.7.1
-  share_plus: ^7.2.2
-  url_launcher: ^6.2.4
-  qr_flutter: ^4.1.0
-  permission_handler: ^11.0.1
-  location: ^7.0.1
+  connectivity_plus: ^5.0.2
+  json_annotation:
+  cached_network_image:
+  skeletonizer:
+  timeago:
+  share_plus:
+  url_launcher:
+  qr_flutter:
+  permission_handler:
+  location:
+  page_transition:
+  animate_do:
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -72,11 +74,11 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
+  flutter_lints:
   injectable_generator:
   build_runner:
   auto_route_generator:
-  json_serializable: ^6.7.1
+  json_serializable:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

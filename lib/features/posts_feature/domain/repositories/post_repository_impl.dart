@@ -1,5 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
+import 'package:social_m_app/features/posts_feature/data/models/post_dto/hashtag_dto.dart';
+import 'package:social_m_app/features/posts_feature/domain/entities/hastag.dart';
 import 'package:social_m_app/features/posts_feature/domain/entities/user.dart';
 import '../../../../core/utils/network/failure.dart';
 import '../../../../core/utils/network/network_exception.dart';
@@ -38,6 +40,12 @@ class PostRepositoryImpl implements PostRepository {
 
   }
   @override
+  Future<Either<NetworkException, Post>> getSinglePost(int postId) async {
+    final result = await dataSource.getSinglePost(postId );
+    return result.map((post) => post.toDomain());
+
+  }
+  @override
   Future<Either<NetworkException, Post>> createPost(CreatePostDto createPostDto) async {
     final result = await dataSource.createPost(createPostDto);
     return result.map((postDto) => postDto.toDomain());
@@ -52,5 +60,22 @@ class PostRepositoryImpl implements PostRepository {
   Future<Either<NetworkException, List<User>>> getUserFollowing(int userId) async {
     final result = await dataSource.getUserFollowing(userId);
     return result.map((userDto) => userDto.map((dto) => dto.toDomain()).toList());
+  }
+  @override
+  Future<Either<NetworkException, List<User>>> getUserSearch(String user) async {
+    final result = await dataSource.getUserSearch(user);
+    return result.map((userDto) => userDto.map((dto) => dto.toDomain()).toList());
+  }
+
+  @override
+  Future<Either<NetworkException, List<Post>>> getPostSearch(String post) async {
+    final result = await dataSource.getPostSearch(post);
+    return result.map((postDto) => postDto.map((dto) => dto.toDomain()).toList());
+  }
+
+  @override
+  Future<Either<NetworkException, List<Hashtag>>> getHashTagSearch(String hashtag) async {
+    final result = await dataSource.getHashTagSearch(hashtag);
+    return result.map((hashtagDto) => hashtagDto.map((dto) => dto.toDomain()).toList());
   }
 }

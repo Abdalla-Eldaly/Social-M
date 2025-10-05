@@ -15,4 +15,5 @@ class AppColors {
   static const Color accentBlue = Color(0xFF146EB4);
   static const Color successGreen = Color(0xFF007600);
   static const Color warningYellow = Color(0xFFF4C430);
+  static const Color transparent = Colors.transparent;
 }

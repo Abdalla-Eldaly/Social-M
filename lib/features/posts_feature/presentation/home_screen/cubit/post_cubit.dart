@@ -36,7 +36,7 @@ class PostCubit extends Cubit<PostState> {
     final isTokenValid = await userProvider.ensureValidToken();
     if (!isTokenValid && !userProvider.isGuest) {
       emit(PostError(
-        NetworkException(message: 'Authentication failed'),
+        const NetworkException(message: 'Authentication failed'),
         currentPosts: _posts,
       ));
       return;

@@ -9,6 +9,7 @@ import '../../../../core/utils/network/network_exception.dart';
 import '../../domain/entities/paginated_posts.dart';
 import '../models/post_dto/comment_dto.dart';
 import '../models/post_dto/create_post_dto.dart';
+import '../models/post_dto/hashtag_dto.dart';
 import '../models/post_dto/paginated_posts_dto.dart';
 import '../models/post_dto/post_dto.dart';
 import 'contract/post_data_source.dart';
@@ -186,6 +187,46 @@ class PostDataSourceImpl implements PostDataSource {
         final List<dynamic> usersJson = data;
         return usersJson.map((json) => UserDto.fromJson(json)).toList();
       },
+    );
+  }
+  @override
+  Future<Either<NetworkException, List<UserDto>>> getUserSearch(String user) async {
+    return _handleApiCall(
+          () => apiClient.get('/Search/users/$user'),
+          (data) {
+        final List<dynamic> usersJson = data;
+        return usersJson.map((json) => UserDto.fromJson(json)).toList();
+      },
+    );
+  }
+
+  @override
+  Future<Either<NetworkException, List<PostDto>>> getPostSearch(String post) async {
+    return _handleApiCall(
+          () => apiClient.get('/Search/posts/$post'),
+          (data) {
+        final List<dynamic> postsJson = data;
+        return postsJson.map((json) => PostDto.fromJson(json)).toList();
+      },
+    );
+  }
+
+  @override
+  Future<Either<NetworkException, List<HashtagDto>>> getHashTagSearch(String hashtag) async {
+    return _handleApiCall(
+          () => apiClient.get('/Search/hashtags/$hashtag'),
+          (data) {
+        final List<dynamic> usersJson = data;
+        return usersJson.map((json) => HashtagDto.fromJson(json)).toList();
+      },
+    );
+  }
+
+  @override
+  Future<Either<NetworkException, PostDto>> getSinglePost(int postId) {
+    return _handleApiCall(
+          () => apiClient.get('${ApiConstants.posts}/$postId'),
+          (data) => PostDto.fromJson(data),
     );
   }
 }

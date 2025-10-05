@@ -46,6 +46,8 @@ import '../../features/posts_feature/domain/usecases/create_post_use_case.dart'
     as _i334;
 import '../../features/posts_feature/domain/usecases/get_posts_use_case.dart'
     as _i252;
+import '../../features/posts_feature/domain/usecases/get_single_post_use_case.dart'
+    as _i194;
 import '../../features/posts_feature/domain/usecases/get_user_followers.dart'
     as _i689;
 import '../../features/posts_feature/domain/usecases/get_user_following.dart'
@@ -54,14 +56,26 @@ import '../../features/posts_feature/domain/usecases/get_user_posts.dart'
     as _i1004;
 import '../../features/posts_feature/domain/usecases/get_user_use_case.dart'
     as _i881;
+import '../../features/posts_feature/domain/usecases/search_hastags_use_case.dart'
+    as _i720;
+import '../../features/posts_feature/domain/usecases/search_posts_use_case.dart'
+    as _i747;
+import '../../features/posts_feature/domain/usecases/search_users_use_case.dart'
+    as _i610;
 import '../../features/posts_feature/presentation/create_post/cubit/create_post_cubit.dart'
     as _i404;
 import '../../features/posts_feature/presentation/home_screen/cubit/comment_cubit.dart'
     as _i1058;
 import '../../features/posts_feature/presentation/home_screen/cubit/post_cubit.dart'
     as _i271;
+import '../../features/posts_feature/presentation/onboarding_screen/cubit/start_cubit.dart'
+    as _i168;
+import '../../features/posts_feature/presentation/post_details_screen/cubit/post_details_cubit.dart'
+    as _i997;
 import '../../features/posts_feature/presentation/profile_screen/cubit/profile_cubit.dart'
     as _i102;
+import '../../features/posts_feature/presentation/search_screen/cubit/search_cubit.dart'
+    as _i832;
 import '../config/router/app_router.dart' as _i351;
 import '../providers/user_provider.dart' as _i26;
 import '../utils/network/api_client.dart' as _i759;
@@ -122,6 +136,12 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i37.AddCommentUseCase(gh<_i160.PostRepository>()));
     gh.factory<_i334.CreatePostUseCase>(
         () => _i334.CreatePostUseCase(gh<_i160.PostRepository>()));
+    gh.factory<_i720.SearchHashTagsUseCase>(
+        () => _i720.SearchHashTagsUseCase(gh<_i160.PostRepository>()));
+    gh.factory<_i747.SearchPostsUseCase>(
+        () => _i747.SearchPostsUseCase(gh<_i160.PostRepository>()));
+    gh.factory<_i610.SearchUsersUseCase>(
+        () => _i610.SearchUsersUseCase(gh<_i160.PostRepository>()));
     gh.factory<_i559.RegisterViewModel>(
         () => _i559.RegisterViewModel(gh<_i1015.RegisterUseCase>()));
     gh.factory<_i252.GetPostsUseCase>(
@@ -130,14 +150,25 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i1004.GetUserPostsUseCase(gh<_i160.PostRepository>()));
     gh.factory<_i881.GetUserInfoUseCase>(
         () => _i881.GetUserInfoUseCase(gh<_i160.PostRepository>()));
+    gh.factory<_i194.GetSinglePostUseCase>(
+        () => _i194.GetSinglePostUseCase(gh<_i160.PostRepository>()));
     gh.factory<_i689.GetUserFollowers>(
         () => _i689.GetUserFollowers(gh<_i160.PostRepository>()));
     gh.factory<_i786.GetUserFollowing>(
         () => _i786.GetUserFollowing(gh<_i160.PostRepository>()));
     gh.factory<_i404.CreatePostCubit>(
         () => _i404.CreatePostCubit(gh<_i334.CreatePostUseCase>()));
+    gh.factory<_i168.OnboardingCubit>(() => _i168.OnboardingCubit(
+          gh<_i928.RefreshTokenUseCase>(),
+          gh<_i303.SecureStorage>(),
+        ));
     gh.factory<_i1058.CommentCubit>(
         () => _i1058.CommentCubit(gh<_i37.AddCommentUseCase>()));
+    gh.factory<_i832.SearchCubit>(() => _i832.SearchCubit(
+          gh<_i747.SearchPostsUseCase>(),
+          gh<_i610.SearchUsersUseCase>(),
+          gh<_i720.SearchHashTagsUseCase>(),
+        ));
     gh.factory<_i998.LoginViewModel>(() => _i998.LoginViewModel(
           gh<_i959.LoginUseCase>(),
           gh<_i928.RefreshTokenUseCase>(),
@@ -147,6 +178,11 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i928.RefreshTokenUseCase>(),
           gh<_i881.GetUserInfoUseCase>(),
           gh<_i303.SecureStorage>(),
+        ));
+    gh.factory<_i997.PostDetailsCubit>(() => _i997.PostDetailsCubit(
+          gh<_i194.GetSinglePostUseCase>(),
+          gh<_i37.AddCommentUseCase>(),
+          gh<_i26.UserProvider>(),
         ));
     gh.factory<_i102.ProfileCubit>(() => _i102.ProfileCubit(
           gh<_i26.UserProvider>(),
