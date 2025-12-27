@@ -11,8 +11,8 @@ class ApiClient {
   ApiClient(this.dio, this.secureStorage) {
     dio.options
       ..baseUrl = ApiConstants.baseUrl
-      ..connectTimeout = const Duration(seconds: 5)
-      ..receiveTimeout = const Duration(seconds: 5);
+      ..connectTimeout = const Duration(seconds: 60)
+      ..receiveTimeout = const Duration(seconds: 60);
 
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {

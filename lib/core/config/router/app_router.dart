@@ -1,10 +1,15 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
 import '../../../features/authentication/presentation/login_screen/view/login_view.dart';
 import '../../../features/authentication/presentation/register_screen/view/register_view.dart';
+import '../../../features/posts_feature/domain/entities/post_entity.dart';
 import '../../../features/posts_feature/presentation/create_post/view/create_post_screen.dart';
 import '../../../features/posts_feature/presentation/home_screen/view/home_screen.dart';
 import '../../../features/posts_feature/presentation/main_lay_out/view/main_lay_out_screen.dart';
+import '../../../features/posts_feature/presentation/onboarding_screen/view/onboardind_view.dart';
+import '../../../features/posts_feature/presentation/post_details_screen/view/post_details_screen.dart';
 import '../../../features/posts_feature/presentation/profile_screen/view/profile_screen.dart';
+import '../../../features/posts_feature/presentation/search_screen/view/search_view.dart';
 import '../../../features/posts_feature/presentation/story_screen/view/story_screen.dart';
 import '../../utils/theme/app_dialogs.dart';
 
@@ -16,24 +21,30 @@ class AppRouter extends RootStackRouter {
 
   @override
   List<AutoRoute> get routes => [
-    // Authentications
+
+
+    AutoRoute(
+      page: OnboardingRoute.page,
+      path: '/Onboarding',
+      initial: true,
+    ),
+
+    // Authentication Routes
     AutoRoute(
       page: LoginRoute.page,
-      type: const RouteType.adaptive(opaque: true),
       path: '/login',
+
     ),
     AutoRoute(
       page: RegisterRoute.page,
       path: '/register',
-      type: const RouteType.adaptive(opaque: true),
-
     ),
 
+
+    // Main Layout
     AutoRoute(
       page: MainLayoutRoute.page,
       path: '/mainLayoutRoute',
-      initial: true,
-
       // guards: [AuthGuard()],
       children: [
         AutoRoute(
@@ -42,17 +53,26 @@ class AppRouter extends RootStackRouter {
         ),
         AutoRoute(
           page: CreatePostRoute.page,
-          path: 'createPostRoute',
+          path: 'createPost',
         ),
         AutoRoute(
           page: StoryRoute.page,
-          path: 'storyRoute',
+          path: 'story',
         ),
         AutoRoute(
           page: ProfileRoute.page,
           path: 'profile',
         ),
       ],
+    ),
+
+    AutoRoute(
+      page: SearchRoute.page,
+      path: '/search',
+    ),
+    AutoRoute(
+      page: PostDetailsRoute.page,
+      path: '/postDetailsRoute',
     ),
   ];
 }

@@ -61,7 +61,7 @@ class CustomElevatedButton extends StatelessWidget {
         height: 25,
 child: Padding(
   padding: const EdgeInsets.all(0),
-  child: Lottie.asset(LottiePath.loading),
+  child: Lottie.asset(LottiePath.animatedLoading),
 ),
 //         child: CircularProgressIndicator(
 //           color: Colors.white,

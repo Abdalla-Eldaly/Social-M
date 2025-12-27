@@ -75,7 +75,7 @@ class RegisterViewModel extends Cubit<BaseState> {
 
       result.fold(
             (failure) => emit(ErrorState(failure.message)),
-            (authOutcome) => emit(SuccessState<AuthOutcome>(authOutcome)),
+            (authOutcome) => emit(SuccessState(authOutcome)),
       );
     } catch (e) {
       emit(ErrorState('Registration failed: $e'));

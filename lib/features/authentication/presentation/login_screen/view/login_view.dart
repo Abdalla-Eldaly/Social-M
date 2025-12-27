@@ -1,8 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../../core/di/di.dart';
+import '../../../../../core/utils/navigation/animated_page_wrapper.dart';
 import '../login_view_model/login_view_model.dart';
 import 'login_body.dart';
 
@@ -14,9 +14,12 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => getIt<LoginViewModel>(),
-      child: const Scaffold(
-
-        body: LoginBody(),
+      child: const AnimatedPageWrapper(
+        transitionType: PageTransitionType.slideFromBottom,
+        duration: Duration(milliseconds: 300),
+        child: Scaffold(
+          body: LoginBody(),
+        ),
       ),
     );
   }
