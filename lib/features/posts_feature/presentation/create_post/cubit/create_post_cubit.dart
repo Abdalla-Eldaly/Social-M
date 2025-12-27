@@ -30,7 +30,6 @@ class CreatePostCubit extends Cubit<CreatePostState> {
       if (image != null) {
         final File imageFile = File(image.path);
 
-        // Validate file exists and is accessible
         if (!await imageFile.exists()) {
           emit(CreatePostError.fileSystem(
             message: 'Selected image file is not accessible. Please try again.',
@@ -38,7 +37,6 @@ class CreatePostCubit extends Cubit<CreatePostState> {
           return;
         }
 
-        // Check file size (optional - add reasonable limits)
         final fileSize = await imageFile.length();
         if (fileSize > 10 * 1024 * 1024) { // 10MB limit
           emit(CreatePostError.fileSystem(
@@ -49,7 +47,6 @@ class CreatePostCubit extends Cubit<CreatePostState> {
 
         emit(CreatePostImageSelected(imageFile: imageFile));
 
-        // Auto-request location after image selection
         await _requestLocation();
       } else {
         emit(CreatePostInitial());
@@ -70,7 +67,6 @@ class CreatePostCubit extends Cubit<CreatePostState> {
     if (currentState is! CreatePostImageSelected) return;
 
     try {
-      // Check if location service is enabled
       bool serviceEnabled = await _location.serviceEnabled();
       if (!serviceEnabled) {
         _updateLocationStatus(
@@ -86,7 +82,6 @@ class CreatePostCubit extends Cubit<CreatePostState> {
         }
       }
 
-      // Check location permission
       PermissionStatus permissionGranted = await _location.hasPermission();
       if (permissionGranted == PermissionStatus.denied) {
         permissionGranted = await _location.requestPermission();
@@ -111,7 +106,6 @@ class CreatePostCubit extends Cubit<CreatePostState> {
         return;
       }
 
-      // Get current location
       LocationData locationData = await _location.getLocation();
 
       if (locationData.latitude != null && locationData.longitude != null) {
@@ -187,11 +181,10 @@ class CreatePostCubit extends Cubit<CreatePostState> {
   void updateHashtags(List<String> hashtags) {
     final currentState = state;
     if (currentState is CreatePostImageSelected) {
-      // Validate and clean hashtags
       final cleanHashtags = hashtags
           .where((tag) => tag.trim().isNotEmpty)
           .map((tag) => tag.trim().toLowerCase())
-          .toSet() // Remove duplicates
+          .toSet()
           .toList();
 
       emit(currentState.copyWith(hashtags: cleanHashtags));
@@ -223,31 +216,26 @@ class CreatePostCubit extends Cubit<CreatePostState> {
     final currentState = state;
     if (currentState is CreatePostImageSelected) {
       if (currentState.locationData != null) {
-        // Remove location
         emit(currentState.copyWith(
           clearLocationData: true,
           clearLocationError: true,
           locationPermissionStatus: LocationPermissionStatus.unknown,
         ));
       } else {
-        // Request location again
         _requestLocation();
       }
     }
   }
 
-  // Validate form before submission
   bool _validateForm(CreatePostImageSelected state) {
     final errors = <String, List<String>>{};
 
-    // Validate caption
     if (state.caption.trim().isEmpty) {
       errors['Caption'] = ['Caption is required'];
     } else if (state.caption.trim().length < 3) {
       errors['Caption'] = ['Caption must be at least 3 characters long'];
     }
 
-    // Validate hashtags
     if (state.hashtags.isEmpty) {
       errors['Hashtags'] = ['At least one hashtag is required'];
     } else {
@@ -259,7 +247,6 @@ class CreatePostCubit extends Cubit<CreatePostState> {
       }
     }
 
-    // Validate image file
     if (!state.imageFile.existsSync()) {
       errors['Image'] = ['Image file is not accessible'];
     }
@@ -279,7 +266,6 @@ class CreatePostCubit extends Cubit<CreatePostState> {
     final currentState = state;
     if (currentState is! CreatePostImageSelected) return;
 
-    // Validate form
     if (!_validateForm(currentState)) return;
 
     try {
@@ -335,7 +321,6 @@ class CreatePostCubit extends Cubit<CreatePostState> {
   void retryFromError() {
     final currentState = state;
     if (currentState is CreatePostError && currentState.canRetry) {
-      // If we were in the middle of creating a post, try again
       if (state is CreatePostError) {
         createPost();
       } else {
@@ -346,7 +331,6 @@ class CreatePostCubit extends Cubit<CreatePostState> {
     }
   }
 
-  // Helper method to retry specific operations
   void retryLastOperation() {
     final currentState = state;
     if (currentState is CreatePostError) {
@@ -362,7 +346,6 @@ class CreatePostCubit extends Cubit<CreatePostState> {
           emit(CreatePostInitial());
           break;
         case CreatePostErrorType.validation:
-        // Don't retry validation errors automatically
           break;
         case CreatePostErrorType.unknown:
           emit(CreatePostInitial());
@@ -371,7 +354,6 @@ class CreatePostCubit extends Cubit<CreatePostState> {
     }
   }
 
-  // Method to clear specific field errors after user fixes them
   void clearFieldError(String fieldName) {
     final currentState = state;
     if (currentState is CreatePostError && currentState.fieldErrors != null) {
@@ -379,7 +361,6 @@ class CreatePostCubit extends Cubit<CreatePostState> {
       updatedErrors.remove(fieldName);
 
       if (updatedErrors.isEmpty) {
-        // If no more errors, go back to previous valid state
         emit(CreatePostInitial());
       } else {
         emit(CreatePostError.validation(
@@ -392,7 +373,6 @@ class CreatePostCubit extends Cubit<CreatePostState> {
 
   @override
   Future<void> close() {
-    // Clean up resources if needed
     return super.close();
   }
 }

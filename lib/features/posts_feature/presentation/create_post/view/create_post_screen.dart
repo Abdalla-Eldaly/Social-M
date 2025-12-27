@@ -55,8 +55,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      // SOLUTION 1: Set resizeToAvoidBottomInset to false
-      // This prevents the scaffold from resizing when keyboard appears
+
       resizeToAvoidBottomInset: false,
 
       body: BlocConsumer<CreatePostCubit, CreatePostState>(
@@ -69,27 +68,23 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           }
         },
         builder: (context, state) {
-          // SOLUTION 2: Wrap with GestureDetector to dismiss keyboard on tap
           return GestureDetector(
             onTap: () {
-              // Dismiss keyboard when tapping outside
               FocusScope.of(context).unfocus();
             },
             child: CustomScrollView(
-              // SOLUTION 3: Add keyboard padding at the bottom
-              // This ensures content is scrollable when keyboard appears
+
               physics: const ClampingScrollPhysics(),
               slivers: [
                 _buildAppBar(context, state),
                 SliverToBoxAdapter(
                   child: _buildBody(context, state),
                 ),
-                // Add bottom padding to account for keyboard
                 SliverToBoxAdapter(
                   child: SizedBox(
                     height: MediaQuery.of(context).viewInsets.bottom > 0
                         ? MediaQuery.of(context).viewInsets.bottom + 20
-                        : 100, // Normal bottom padding
+                        : 100,
                   ),
                 ),
               ],
@@ -206,7 +201,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           ),
           const SizedBox(height: 40),
 
-          // Image Source Options
           Row(
             children: [
               Expanded(
@@ -329,23 +323,18 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image Preview
           _buildImagePreview(state.imageFile),
           const SizedBox(height: 24),
 
-          // Caption Input
           _buildCaptionInput(),
           const SizedBox(height: 20),
 
-          // Hashtags Section
           _buildHashtagsSection(),
           const SizedBox(height: 20),
 
-          // Location Section
           _buildLocationSection(state),
           const SizedBox(height: 20),
 
-          // Additional Options
           _buildAdditionalOptions(),
         ],
       ),
@@ -486,7 +475,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             ),
             onSubmitted: (_) {
               _addHashtag();
-              // Keep focus for easy addition of multiple hashtags
               _hashtagFocusNode.requestFocus();
             },
             style: const TextStyle(fontSize: 16),
